@@ -1,0 +1,157 @@
+package com.ljx.goods.service.Impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ljx.goods.mapper.goodsMapper;
+import com.ljx.goods.mapper.goodsOrderMapper;
+import com.ljx.goods.mapper.orderItemMapper;
+import com.ljx.goods.pojo.*;
+import com.ljx.goods.service.goodsOrderService;
+import com.ljx.goods.service.shoppingCartService;
+import com.ljx.goods.util.orderCode;
+import com.ljx.goods.util.useless.CommonResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class goodsOrderServiceImpl extends ServiceImpl<goodsOrderMapper, goodsOrder> implements goodsOrderService {
+
+    @Autowired
+    goodsOrderMapper orderMapper;
+
+    @Autowired
+    goodsMapper goodsMapper;
+
+    @Autowired
+    shoppingCartService shoppingCartService;
+
+    @Autowired
+    orderItemMapper orderItemMapper;
+
+    //生成订单
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public CommonResult saveOrder(user user) {
+        Integer userId = user.getId();
+        List<shoppingCart> shoppingCarts = shoppingCartService.selectUserCart(userId);
+
+        //判断列表中的商品是否存在、是否是上架状态、库存是否足够
+        for(shoppingCart scl:shoppingCarts){
+            Integer goodsId = scl.getGoodsId();
+
+            QueryWrapper<goods> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("goods_id",goodsId);
+            goods oneByDetail = goodsMapper.selectOne(wrapper1);
+            if(oneByDetail ==null || oneByDetail.getState().equals(0)){
+                return CommonResult.failed("订单生成失败，商品已不存在！");
+            }
+            //判断库存是否足够
+            if(scl.getCount()>oneByDetail.getGoodsStock()){
+                return CommonResult.failed("订单生成失败，商品不够！！！");
+            }
+        }
+        //把购物车获得的商品数据存储到orderItem表
+        List<orderItem> orderItemList = new ArrayList<>();
+        for(shoppingCart scls:shoppingCarts){
+            orderItem orderItem = new orderItem();
+            orderItem.setGoodsId(scls.getGoodsId());
+            orderItem.setGoodsName(scls.getGoodsName());
+            orderItem.setTupian(scls.getTupian());
+            orderItem.setCount(scls.getCount());
+            orderItem.setGoodsPrice(scls.getGoodsPrice());
+
+            orderItemList.add(orderItem);
+        }
+        //扣库存
+        for (int i = 0; i < orderItemList.size(); i++) {
+            orderItem orderItem =  orderItemList.get(i);
+            //先拿到原先的goods
+            QueryWrapper<goods> wrapper2 = new QueryWrapper<>();
+            wrapper2.eq("goods_id",orderItem.getGoodsId());
+            goods oneByDetail = goodsMapper.selectOne(wrapper2);
+            //计算新的库存；
+            int stock = oneByDetail.getGoodsStock()-orderItem.getCount();
+            oneByDetail.setGoodsStock(stock);
+            //去更新库存；
+            UpdateWrapper<goods> goodsUpdateWrapper = new UpdateWrapper<>();
+            goodsUpdateWrapper.eq("goods_id",oneByDetail.getGoodsId());
+            goodsMapper.update(oneByDetail,goodsUpdateWrapper);
+        }
+        //清空购物车内容
+        shoppingCartService.dropCart();
+
+        //获取当前订单的总价
+        Integer totalPrice = 0;
+        for(orderItem Items:orderItemList){
+            totalPrice+=Items.getGoodsPrice()*Items.getCount();
+        }
+
+        //生成订单编号
+        String orderNo = orderCode.getOrderCode(userId);
+
+        //生成订单
+        goodsOrder order = new goodsOrder();
+        order.setOrderNo(orderNo);
+        order.setUserId(userId);
+        order.setPayStatus(0);
+        order.setTelephone(user.getTelephone());
+        order.setTotalPrice(totalPrice);
+        order.setCreateTime(new Date());
+        order.setUserAddress(user.getAddress());
+        orderMapper.insert(order);
+
+        for(orderItem Item:orderItemList){
+            Item.setOrderNo(orderNo);
+            orderItemMapper.insert(Item);
+        }
+
+        return new CommonResult(200,"订单生成完毕",orderNo);
+    }
+
+    //获取订单详情
+    @Override
+    public goodsOrder getOrderByOrderNo(String orderNo) {
+        QueryWrapper<goodsOrder> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_no",orderNo);
+        goodsOrder order = orderMapper.selectOne(wrapper);
+        return order;
+    }
+
+    //查看订单列表
+    @Override
+    public CommonResult getMyOrders(Integer userId) {
+        QueryWrapper<goodsOrder> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id",userId);
+        List<goodsOrder> orders = orderMapper.selectList(wrapper);
+        if(orders !=null){
+            return CommonResult.success(orders);
+        }else{
+            return CommonResult.failed("当前订单为空");
+        }
+    }
+
+    //取消订单
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Boolean cancelOrder(String orderNo) {
+        UpdateWrapper<orderItem> wrapper1 = new UpdateWrapper<>();
+        wrapper1.eq("order_no",orderNo);
+        Integer integer1 = orderItemMapper.delete(wrapper1);
+        if(integer1>0){
+            QueryWrapper<goodsOrder> wrapper2 = new QueryWrapper<>();
+            wrapper2.eq("order_no",orderNo);
+            Integer integer = orderMapper.delete(wrapper2);
+            if(integer>0){
+                return true;
+            }
+        }
+        return false;
+    }
+
+}
