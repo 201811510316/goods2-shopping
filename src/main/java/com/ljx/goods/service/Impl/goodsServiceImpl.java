@@ -116,27 +116,33 @@ public class goodsServiceImpl extends ServiceImpl<goodsMapper, goods> implements
     //查询所有热门商品信息
     @Override
     public List<goods> goodsHotAllList() {
+        Page<goods> goodsPage = new Page<>(1, 4);
         QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("goods_hot",1).ne("state",0);
-        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+//        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
         return goods;
     }
 
     //查询所有最新商品信息
     @Override
     public List<goods> goodsNewAllList() {
+        Page<goods> goodsPage = new Page<>(1, 4);
         QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("goods_new",1).ne("state",0);
-        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+//        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
         return goods;
     }
 
     //查询所有普通商品信息
     @Override
-    public List<goods> goodsAllList() {
+    public List<goods> goodsAllList(Integer items,Integer total) {
+        Page<goods> goodsPage = new Page<>(items, total);
         QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("goods_new",0).eq("goods_hot",0).ne("state",0);
-        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+//        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
         return goods;
     }
 }

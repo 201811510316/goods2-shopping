@@ -80,9 +80,9 @@ public class PortalProductController {
 
     @RequestMapping("/goods")
     @ResponseBody
-    public Object goodsByGoods(){
+    public Object goodsByGoods(@RequestParam(value = "items",defaultValue = "1")Integer items,@RequestParam(value = "total",defaultValue = "4")Integer total){
         Map resultObj = new HashMap();
-        List<goods> goods = goodsService.goodsAllList();
+        List<goods> goods = goodsService.goodsAllList(items,total);
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
         resultObj.put("goods",goods);

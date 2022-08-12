@@ -33,5 +33,5 @@ public interface goodsService extends IService<goods> {
     List<goods> goodsNewAllList();
 
     //查询所有普通商品信息
-    List<goods> goodsAllList();
+    List<goods> goodsAllList(Integer items,Integer total);
 }
