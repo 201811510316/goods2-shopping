@@ -35,19 +35,11 @@ public class goodsOrder {
     //生成订单时间
     private Date createTime;
 
-    //订单状态 0-为发货 1-已发货
-    private Integer orderState;
-
-    //发货时间
-    private Date updateTime;
-
-    //用户支付订单时间
-    private Date payTime;
 
     public goodsOrder() {
     }
 
-    public goodsOrder(Integer orderId, String orderNo, Integer userId, Integer totalPrice, Integer payStatus, String userAddress, String telephone, Date createTime, Integer orderState, Date updateTime, Date payTime) {
+    public goodsOrder(Integer orderId, String orderNo, Integer userId, Integer totalPrice, Integer payStatus, String userAddress, String telephone, Date createTime) {
         this.orderId = orderId;
         this.orderNo = orderNo;
         this.userId = userId;
@@ -56,9 +48,6 @@ public class goodsOrder {
         this.userAddress = userAddress;
         this.telephone = telephone;
         this.createTime = createTime;
-        this.orderState = orderState;
-        this.updateTime = updateTime;
-        this.payTime = payTime;
     }
 
     public Integer getOrderId() {
@@ -125,33 +114,10 @@ public class goodsOrder {
         this.createTime = createTime;
     }
 
-    public Integer getOrderState() {
-        return orderState;
-    }
-
-    public void setOrderState(Integer orderState) {
-        this.orderState = orderState;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Date getPayTime() {
-        return payTime;
-    }
-
-    public void setPayTime(Date payTime) {
-        this.payTime = payTime;
-    }
 
     @Override
     public String toString() {
-        return "goodsOrder{" +
+        return "order{" +
                 "orderId=" + orderId +
                 ", orderNo='" + orderNo + '\'' +
                 ", userId=" + userId +
@@ -160,9 +126,6 @@ public class goodsOrder {
                 ", userAddress='" + userAddress + '\'' +
                 ", telephone='" + telephone + '\'' +
                 ", createTime=" + createTime +
-                ", orderState=" + orderState +
-                ", updateTime=" + updateTime +
-                ", payTime=" + payTime +
                 '}';
     }
 }

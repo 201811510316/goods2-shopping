@@ -10,7 +10,9 @@ import com.ljx.goods.service.shoppingCartService;
 import com.ljx.goods.util.useless.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -69,13 +71,8 @@ public class PortalOrderController {
         Integer userId = user.getId();
         CommonResult myOrders = orderService.getMyOrders(userId);
         if(myOrders.getCode()==200){
-            if(myOrders.getData()==null){
-                CommonResult result = new CommonResult(200,"当前没有订单哦！");
-                return result;
-            }else{
-                CommonResult result = new CommonResult(200, myOrders.getMessage(), myOrders.getData());
-                return result;
-            }
+            CommonResult result = new CommonResult(200, myOrders.getMessage(), myOrders.getData());
+            return result;
         }
         return CommonResult.failed(myOrders.getMessage());
     }
@@ -101,17 +98,4 @@ public class PortalOrderController {
         return result;
     }
 
-    //支付订单（修改）
-    @RequestMapping(value = "/orders/pay",method = RequestMethod.GET)
-    @ResponseBody
-    public CommonResult updateByOrder(@RequestParam("orderNo")String orderNo){
-        Integer integer = orderService.updateOrderPay(orderNo);
-        if(integer>0){
-            CommonResult result = new CommonResult(200, "支付成功");
-            return result;
-        }else{
-            CommonResult result = new CommonResult(404, "支付失败");
-            return result;
-        }
-    }
 }

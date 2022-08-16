@@ -8,7 +8,7 @@ import com.ljx.goods.util.useless.CommonResult;
 public interface goodsOrderService extends IService<goodsOrder> {
 
     //当购物车结算时，生成订单（保存订单）
-    CommonResult saveOrder(user user);
+    public CommonResult saveOrder(user user);
 
     //获取订单详情
     goodsOrder getOrderByOrderNo(String orderNo);
@@ -18,8 +18,5 @@ public interface goodsOrderService extends IService<goodsOrder> {
 
     //手动取消订单
     Boolean cancelOrder(String orderNo);
-
-    //支付订单（修改订单支付状态）
-    Integer updateOrderPay(String orderNo);
 
 }

@@ -104,7 +104,6 @@ public class goodsOrderServiceImpl extends ServiceImpl<goodsOrderMapper, goodsOr
         order.setTotalPrice(totalPrice);
         order.setCreateTime(new Date());
         order.setUserAddress(user.getAddress());
-        order.setOrderState(0);
         orderMapper.insert(order);
 
         for(orderItem Item:orderItemList){
@@ -153,24 +152,6 @@ public class goodsOrderServiceImpl extends ServiceImpl<goodsOrderMapper, goodsOr
             }
         }
         return false;
-    }
-
-    //支付订单（修改订单支付状态）
-    @Override
-    public Integer updateOrderPay(String orderNo) {
-        QueryWrapper<goodsOrder> goodsOrderQueryWrapper = new QueryWrapper<>();
-        goodsOrderQueryWrapper.eq("order_no",orderNo);
-        goodsOrder goodsOrder = orderMapper.selectOne(goodsOrderQueryWrapper);
-        if(goodsOrder.getPayStatus()==1 || goodsOrder.getPayTime()!=null){
-            return 0;
-        }else{
-            //修改状态和时间
-            goodsOrder.setPayStatus(1);
-            goodsOrder.setPayTime(new Date());
-            int order_no = orderMapper.update(goodsOrder, new UpdateWrapper<goodsOrder>().eq("order_no", orderNo));
-            return order_no;
-        }
-
     }
 
 }

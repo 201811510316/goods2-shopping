@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hs_db05
+    url: jdbc:mysql://localhost:3306/hs_db02
     username: root
     password: 123456
   thymeleaf:
@@ -16,6 +16,4 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  #开启SQL语句打印
 
 server:
-  port: 8080
-
-#测试数据库hs_db02
+  port: 8081

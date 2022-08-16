@@ -93,7 +93,7 @@ public class CartItemController {
         return new CommonResult(404,commonResult.getMessage());
     }
 
-    //.........................................................................
+
     //购物车点击去结算,生成订单
     @RequestMapping("/cartorder")
     @ResponseBody
