@@ -29,16 +29,19 @@ public class shoppingCartServiceImpl extends ServiceImpl<shoppingCartMapper, sho
         QueryWrapper<shoppingCart> wrapper = new QueryWrapper<>();
         wrapper.eq("goods_id",shoppingCart.getGoodsId()).eq("user_id",shoppingCart.getUserId());
         shoppingCart selectByCart = shoppingCartMapper.selectOne(wrapper);
+        //判断购物车中是否已存在该商品，有的话数量加1
         if(selectByCart !=null){
-            selectByCart.setCount(shoppingCart.getCount()+1);
+            selectByCart.setCount(selectByCart.getCount()+1);
             return updateCart(selectByCart);
         }
         QueryWrapper<goods> wrapper1 = new QueryWrapper<>();
         wrapper1.eq("goods_id",shoppingCart.getGoodsId());
         goods oneByDetail = goodsMapper.selectOne(wrapper1);
-        if(oneByDetail ==null){
+        //判断商品库存
+        if(oneByDetail.getGoodsStock() ==null){
             return CommonResult.failed("该商品买完了");
         }
+        //判断商品购买数量是否超过最大值
         if(shoppingCart.getCount()>15){
             return CommonResult.failed("超出单个商品的最大购买数量！");
         }
