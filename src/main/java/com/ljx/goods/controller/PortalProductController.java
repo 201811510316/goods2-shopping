@@ -56,33 +56,36 @@ public class PortalProductController {
         return resultObj;
     }
 
+    //获取全部热门商品
     @RequestMapping("/hot")
     @ResponseBody
-    public Object goodsByHot(){
+    public Object goodsByHot(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "rows",defaultValue = "4")Integer rows){
         Map resultObj = new HashMap();
-        List<goods> goodsHot = goodsService.goodsHotAllList();
+        List<goods> goodsHot = goodsService.goodsHotAllList(page, rows);
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
         resultObj.put("hot",goodsHot);
         return resultObj;
     }
 
+    //获取全部最新商品
     @RequestMapping("/new")
     @ResponseBody
-    public Object goodsByNew(){
+    public Object goodsByNew(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "rows",defaultValue = "4")Integer rows){
         Map resultObj = new HashMap();
-        List<goods> goodsNew = goodsService.goodsNewAllList();
+        List<goods> goodsNew = goodsService.goodsNewAllList(page, rows);
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
         resultObj.put("new",goodsNew);
         return resultObj;
     }
 
+    //获取全部普通商品
     @RequestMapping("/goods")
     @ResponseBody
-    public Object goodsByGoods(@RequestParam(value = "items",defaultValue = "1")Integer items,@RequestParam(value = "total",defaultValue = "4")Integer total){
+    public Object goodsByGoods(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "rows",defaultValue = "4")Integer rows){
         Map resultObj = new HashMap();
-        List<goods> goods = goodsService.goodsAllList(items,total);
+        List<goods> goods = goodsService.goodsAllList(page, rows);
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
         resultObj.put("goods",goods);
