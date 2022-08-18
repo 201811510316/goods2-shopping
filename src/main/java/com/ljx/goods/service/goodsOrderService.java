@@ -22,4 +22,7 @@ public interface goodsOrderService extends IService<goodsOrder> {
     //支付订单（修改订单支付状态）
     Integer updateOrderPay(String orderNo);
 
+    //修改订单的用户的地址或电话
+    Integer updateByOrderUser(goodsOrder goodsOrder);
+
 }

@@ -59,9 +59,9 @@ public class PortalProductController {
     //获取全部热门商品
     @RequestMapping("/hot")
     @ResponseBody
-    public Object goodsByHot(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "rows",defaultValue = "4")Integer rows){
+    public Object goodsByHot(){
         Map resultObj = new HashMap();
-        List<goods> goodsHot = goodsService.goodsHotAllList(page, rows);
+        List<goods> goodsHot = goodsService.goodsHotAllList();
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
         resultObj.put("hot",goodsHot);
@@ -71,9 +71,9 @@ public class PortalProductController {
     //获取全部最新商品
     @RequestMapping("/new")
     @ResponseBody
-    public Object goodsByNew(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "rows",defaultValue = "4")Integer rows){
+    public Object goodsByNew(){
         Map resultObj = new HashMap();
-        List<goods> goodsNew = goodsService.goodsNewAllList(page, rows);
+        List<goods> goodsNew = goodsService.goodsNewAllList();
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
         resultObj.put("new",goodsNew);
@@ -83,9 +83,9 @@ public class PortalProductController {
     //获取全部普通商品
     @RequestMapping("/goods")
     @ResponseBody
-    public Object goodsByGoods(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "rows",defaultValue = "4")Integer rows){
+    public Object goodsByGoods(){
         Map resultObj = new HashMap();
-        List<goods> goods = goodsService.goodsAllList(page, rows);
+        List<goods> goods = goodsService.goodsAllList();
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
         resultObj.put("goods",goods);

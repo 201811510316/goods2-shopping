@@ -102,7 +102,7 @@ public class PortalOrderController {
     }
 
     //支付订单（修改）
-    @RequestMapping(value = "/orders/pay",method = RequestMethod.GET)
+    @RequestMapping(value = "/orders/pay")
     @ResponseBody
     public CommonResult updateByOrder(@RequestParam("orderNo")String orderNo){
         Integer integer = orderService.updateOrderPay(orderNo);
@@ -114,4 +114,19 @@ public class PortalOrderController {
             return result;
         }
     }
+
+    //修改订单的用户的地址或电话
+    @RequestMapping("/updateByUser")
+    @ResponseBody
+    public CommonResult updateByUser(@RequestBody goodsOrder goodsOrder ){
+        Integer integer = orderService.updateByOrderUser(goodsOrder);
+        if(integer>0){
+            CommonResult result = new CommonResult(200, "修改成功");
+            return result;
+        }else{
+            CommonResult result = new CommonResult(404, "修改失败");
+            return result;
+        }
+    }
+
 }

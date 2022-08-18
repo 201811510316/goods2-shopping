@@ -96,6 +96,9 @@ public class shoppingCartServiceImpl extends ServiceImpl<shoppingCartMapper, sho
         if(shoppingCart.getCount()>15){
             return CommonResult.failed("超出单个商品的最大购买数量！");
         }
+        if(shoppingCart.getCount()==0){
+            return deleteCart(shoppingCart.getGoodsId());
+        }
         shoppingCart1.setCount(shoppingCart.getCount());
         if(shoppingCartMapper.update(shoppingCart1,new UpdateWrapper<shoppingCart>().eq("id",shoppingCart1.getId()))>0){
             return new CommonResult(200,"修改成功");

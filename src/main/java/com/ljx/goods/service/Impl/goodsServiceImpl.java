@@ -115,34 +115,34 @@ public class goodsServiceImpl extends ServiceImpl<goodsMapper, goods> implements
 
     //查询所有热门商品信息
     @Override
-    public List<goods> goodsHotAllList(Integer page,Integer rows) {
-        Page<goods> goodsPage = new Page<>(page, rows);
+    public List<goods> goodsHotAllList() {
+//        Page<goods> goodsPage = new Page<>(page, rows);
         QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("goods_hot",1).ne("state",0);
-//        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
-        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
+        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+//        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
         return goods;
     }
 
     //查询所有最新商品信息
     @Override
-    public List<goods> goodsNewAllList(Integer page,Integer rows) {
-        Page<goods> goodsPage = new Page<>(page, rows);
+    public List<goods> goodsNewAllList() {
+//        Page<goods> goodsPage = new Page<>(page, rows);
         QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("goods_new",1).ne("state",0);
-//        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
-        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
+        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+//        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
         return goods;
     }
 
     //查询所有普通商品信息
     @Override
-    public List<goods> goodsAllList(Integer page,Integer rows) {
-        Page<goods> goodsPage = new Page<>(page, rows);
+    public List<goods> goodsAllList() {
+//        Page<goods> goodsPage = new Page<>(page, rows);
         QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("goods_new",0).eq("goods_hot",0).ne("state",0);
-//        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
-        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
+        List<goods> goods = goodsMapper.selectList(goodsQueryWrapper);
+//        List<goods> goods = goodsMapper.selectPage(goodsPage, goodsQueryWrapper).getRecords();
         return goods;
     }
 }

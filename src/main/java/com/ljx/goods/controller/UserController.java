@@ -80,24 +80,11 @@ public class UserController {
 
     //登出
     @GetMapping("/logout")
-    public String logout(HttpSession session){
+    @ResponseBody
+    public CommonResult logout(HttpSession session){
         session.removeAttribute("user");
-        return "login";
+        CommonResult result = new CommonResult(200, "退出当前账号");
+        return result;
     }
 
-//    @GetMapping("/login")
-//    public String login(){
-//        return "login";
-//    }
-//
-//    @RequestMapping("/register")
-//    public String register1(){
-//        return "register";
-//    }
-//
-////    //用户信息查看
-//    @GetMapping("/user")
-//    public String UserById1(){
-//        return "user";
-//    }
 }

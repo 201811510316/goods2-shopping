@@ -27,11 +27,11 @@ public interface goodsService extends IService<goods> {
     List<goods> MoHuByGoods(String keyword);
 
     //查询所有热门商品信息
-    List<goods> goodsHotAllList(Integer page,Integer rows);
+    List<goods> goodsHotAllList();
 
     //查询所有最新商品信息
-    List<goods> goodsNewAllList(Integer page,Integer rows);
+    List<goods> goodsNewAllList();
 
     //查询所有普通商品信息
-    List<goods> goodsAllList(Integer page,Integer rows);
+    List<goods> goodsAllList();
 }

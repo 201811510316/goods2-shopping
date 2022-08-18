@@ -69,20 +69,20 @@ public class goodsOrderServiceImpl extends ServiceImpl<goodsOrderMapper, goodsOr
             orderItemList.add(orderItem);
         }
         //扣库存
-        for (int i = 0; i < orderItemList.size(); i++) {
-            orderItem orderItem =  orderItemList.get(i);
-            //先拿到原先的goods
-            QueryWrapper<goods> wrapper2 = new QueryWrapper<>();
-            wrapper2.eq("goods_id",orderItem.getGoodsId());
-            goods oneByDetail = goodsMapper.selectOne(wrapper2);
-            //计算新的库存；
-            int stock = oneByDetail.getGoodsStock()-orderItem.getCount();
-            oneByDetail.setGoodsStock(stock);
-            //去更新库存；
-            UpdateWrapper<goods> goodsUpdateWrapper = new UpdateWrapper<>();
-            goodsUpdateWrapper.eq("goods_id",oneByDetail.getGoodsId());
-            goodsMapper.update(oneByDetail,goodsUpdateWrapper);
-        }
+//        for (int i = 0; i < orderItemList.size(); i++) {
+//            orderItem orderItem =  orderItemList.get(i);
+//            //先拿到原先的goods
+//            QueryWrapper<goods> wrapper2 = new QueryWrapper<>();
+//            wrapper2.eq("goods_id",orderItem.getGoodsId());
+//            goods oneByDetail = goodsMapper.selectOne(wrapper2);
+//            //计算新的库存；
+//            int stock = oneByDetail.getGoodsStock()-orderItem.getCount();
+//            oneByDetail.setGoodsStock(stock);
+//            //去更新库存；
+//            UpdateWrapper<goods> goodsUpdateWrapper = new UpdateWrapper<>();
+//            goodsUpdateWrapper.eq("goods_id",oneByDetail.getGoodsId());
+//            goodsMapper.update(oneByDetail,goodsUpdateWrapper);
+//        }
         //清空购物车内容
         shoppingCartService.dropCart();
 
@@ -141,21 +141,28 @@ public class goodsOrderServiceImpl extends ServiceImpl<goodsOrderMapper, goodsOr
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean cancelOrder(String orderNo) {
-        UpdateWrapper<orderItem> wrapper1 = new UpdateWrapper<>();
-        wrapper1.eq("order_no",orderNo);
-        Integer integer1 = orderItemMapper.delete(wrapper1);
-        if(integer1>0){
-            QueryWrapper<goodsOrder> wrapper2 = new QueryWrapper<>();
-            wrapper2.eq("order_no",orderNo);
-            Integer integer = orderMapper.delete(wrapper2);
-            if(integer>0){
-                return true;
+        QueryWrapper<goodsOrder> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_no",orderNo);
+        goodsOrder goodsOrder = orderMapper.selectOne(wrapper);
+        //如果已支付就不能取消订单
+        if(goodsOrder.getPayStatus()==0 || goodsOrder.getPayTime()==null){
+            UpdateWrapper<orderItem> wrapper1 = new UpdateWrapper<>();
+            wrapper1.eq("order_no",orderNo);
+            Integer integer1 = orderItemMapper.delete(wrapper1);
+            if(integer1>0){
+                UpdateWrapper<goodsOrder> wrapper2 = new UpdateWrapper<>();
+                wrapper2.eq("order_no",orderNo);
+                Integer integer = orderMapper.delete(wrapper2);
+                if(integer>0){
+                    return true;
+                }
             }
         }
         return false;
     }
 
     //支付订单（修改订单支付状态）
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer updateOrderPay(String orderNo) {
         QueryWrapper<goodsOrder> goodsOrderQueryWrapper = new QueryWrapper<>();
@@ -163,14 +170,57 @@ public class goodsOrderServiceImpl extends ServiceImpl<goodsOrderMapper, goodsOr
         goodsOrder goodsOrder = orderMapper.selectOne(goodsOrderQueryWrapper);
         if(goodsOrder.getPayStatus()==1 || goodsOrder.getPayTime()!=null){
             return 0;
+        }else if(goodsOrder.getTelephone().isEmpty() || goodsOrder.getUserAddress().isEmpty()){
+            return 0;
         }else{
+            QueryWrapper<orderItem> wrapper = new QueryWrapper<>();
+            wrapper.eq("order_no",orderNo);
+            List<orderItem> orderItems = orderItemMapper.selectList(wrapper);
+            for(orderItem orderItem:orderItems){
+                //获取原先商品
+                QueryWrapper<goods> wrapper1 = new QueryWrapper<>();
+                wrapper1.eq("goods_id",orderItem.getGoodsId());
+                goods goods = goodsMapper.selectOne(wrapper1);
+                //扣库存---计算新库存
+                int stock=goods.getGoodsStock()-orderItem.getCount();
+                goods.setGoodsStock(stock);
+                //加销量---计算新销量
+                int sales=goods.getGoodsSales()+orderItem.getCount();
+                goods.setGoodsSales(sales);
+                //保存新商品
+                UpdateWrapper<goods> goodsUpdateWrapper = new UpdateWrapper<>();
+                goodsUpdateWrapper.eq("goods_id",goods.getGoodsId());
+                goodsMapper.update(goods,goodsUpdateWrapper);
+            }
             //修改状态和时间
             goodsOrder.setPayStatus(1);
             goodsOrder.setPayTime(new Date());
             int order_no = orderMapper.update(goodsOrder, new UpdateWrapper<goodsOrder>().eq("order_no", orderNo));
             return order_no;
         }
-
     }
+
+    //修改订单的用户的地址或电话
+    @Override
+    public Integer updateByOrderUser(goodsOrder goodsOrder) {
+        //判断该订单是否支付，没有支付可以进行修改，有支付就不让其修改
+        if(goodsOrder.getPayStatus().equals(0)){
+            //要修改对象
+            QueryWrapper<goodsOrder> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("order_No", goodsOrder.getOrderNo());
+            goodsOrder goodsOrder1 = orderMapper.selectOne(wrapper1);
+            //修改
+            goodsOrder1.setUserAddress(goodsOrder.getUserAddress());
+            goodsOrder1.setTelephone(goodsOrder.getTelephone());
+            //修改条件
+            UpdateWrapper<goodsOrder> wrapper = new UpdateWrapper<>();
+            wrapper.eq("order_No",goodsOrder.getOrderNo());
+            int update = orderMapper.update(goodsOrder1, wrapper);
+            return update;
+        }else{
+            return 0;
+        }
+    }
+
 
 }
