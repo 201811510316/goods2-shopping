@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface shoppingCartService extends IService<shoppingCart> {
+public interface shoppingCartService {
 
     //将商品添加到购物车中
     CommonResult goodsAddCart(shoppingCart shoppingCart);
