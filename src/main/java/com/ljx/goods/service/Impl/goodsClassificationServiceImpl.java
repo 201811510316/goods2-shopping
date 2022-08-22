@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class goodsClassificationServiceImpl extends ServiceImpl<goodsClassificationMapper, goodsClassification> implements goodsClassificationService {
+public class goodsClassificationServiceImpl implements goodsClassificationService {
 
     @Autowired
     goodsClassificationMapper goodsClassificationMapper;

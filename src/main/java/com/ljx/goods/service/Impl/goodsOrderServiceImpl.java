@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class goodsOrderServiceImpl extends ServiceImpl<goodsOrderMapper, goodsOrder> implements goodsOrderService {
+public class goodsOrderServiceImpl implements goodsOrderService {
 
     @Autowired
     goodsOrderMapper orderMapper;

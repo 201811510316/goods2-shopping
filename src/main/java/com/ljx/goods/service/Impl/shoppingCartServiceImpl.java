@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class shoppingCartServiceImpl extends ServiceImpl<shoppingCartMapper, shoppingCart> implements shoppingCartService {
+public class shoppingCartServiceImpl implements shoppingCartService {
 
     @Autowired
     shoppingCartMapper shoppingCartMapper;
@@ -44,6 +44,10 @@ public class shoppingCartServiceImpl extends ServiceImpl<shoppingCartMapper, sho
         //判断商品购买数量是否超过最大值
         if(shoppingCart.getCount()>15){
             return CommonResult.failed("超出单个商品的最大购买数量！");
+        }
+        //判断商品购买数量是否大于商品库存
+        if(oneByDetail.getGoodsStock()-shoppingCart.getCount()<0){
+            return CommonResult.failed("商品数量只有["+oneByDetail.getGoodsStock()+"]");
         }
         QueryWrapper<shoppingCart> wrapper2 = new QueryWrapper<>();
         wrapper2.eq("user_id",shoppingCart.getUserId());
