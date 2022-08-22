@@ -9,7 +9,7 @@ import com.ljx.goods.util.goodsContentResult;
 
 import java.util.List;
 
-public interface goodsService {
+public interface goodsService extends IService<goods> {
 
     //查询所有商品信息
     goodsContentResult findAll();
