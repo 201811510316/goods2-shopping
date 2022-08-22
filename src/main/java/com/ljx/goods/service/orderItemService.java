@@ -5,7 +5,7 @@ import com.ljx.goods.pojo.orderItem;
 
 import java.util.List;
 
-public interface orderItemService extends IService<orderItem> {
+public interface orderItemService {
 
     //查询操作
     List<orderItem> getOrderItemByOrderNo(String orderNo);
