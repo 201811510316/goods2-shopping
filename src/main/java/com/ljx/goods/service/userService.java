@@ -3,7 +3,7 @@ package com.ljx.goods.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ljx.goods.pojo.user;
 
-public interface userService extends IService<user> {
+public interface userService {
     //用户添加（注册）
     public Integer addByUser(String username,String password);
 

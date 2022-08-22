@@ -5,7 +5,7 @@ import com.ljx.goods.pojo.goodsOrder;
 import com.ljx.goods.pojo.user;
 import com.ljx.goods.util.useless.CommonResult;
 
-public interface goodsOrderService extends IService<goodsOrder> {
+public interface goodsOrderService {
 
     //当购物车结算时，生成订单（保存订单）
     CommonResult saveOrder(user user);
