@@ -50,7 +50,7 @@ public class UserController {
     }
 
     //用户信息修改
-    @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateUser", method = RequestMethod.PUT)
     @ResponseBody
     public CommonResult<user> updateUser(@RequestBody user user,HttpSession session){
         Boolean aBoolean = userService.updateByUserName(user);
