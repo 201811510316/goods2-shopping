@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class orderItemServiceImpl implements orderItemService {
+public class orderItemServiceImpl extends ServiceImpl<orderItemMapper, orderItem> implements orderItemService {
 
     @Autowired
     orderItemMapper orderItemMapper;

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class userServiceImpl implements userService {
+public class userServiceImpl extends ServiceImpl<userMapper, user> implements userService {
     @Autowired
     userMapper userMapper;
 
