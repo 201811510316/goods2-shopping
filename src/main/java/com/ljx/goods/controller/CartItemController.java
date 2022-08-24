@@ -59,12 +59,16 @@ public class CartItemController {
     @RequestMapping(value = "/addcart",method = RequestMethod.POST)
     @ResponseBody
     public CommonResult addByCart(@RequestParam("id")Integer id, HttpSession session){
+        //拿到当前用户信息
+        user user = (user)session.getAttribute("user");
+        if(user==null){
+            return CommonResult.failed("你还没登录！！！");
+        }
         //拿到对应的商品信息
         QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("goods_id",id);
         goods goods = goodsMapper.selectOne(goodsQueryWrapper);
-        //拿到当前用户信息
-        user user = (user)session.getAttribute("user");
+
         //生成shoppingCart
         shoppingCart shoppingCart = new shoppingCart();
         shoppingCart.setUserId(user.getId());
@@ -86,6 +90,9 @@ public class CartItemController {
     @ResponseBody
     public CommonResult getByCart(HttpSession session){
         user user = (user)session.getAttribute("user");
+        if(user==null){
+            return CommonResult.failed("你还没登录！！！");
+        }
         List<shoppingCart> shoppingCarts = shoppingCartService.selectUserCart(user.getId());
         if(!shoppingCarts.isEmpty()){
             return new CommonResult(200,"获取成功",shoppingCarts);
