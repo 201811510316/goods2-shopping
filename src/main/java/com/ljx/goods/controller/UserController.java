@@ -44,9 +44,6 @@ public class UserController {
     @ResponseBody
     public CommonResult<user> UserById(HttpSession session){
         user user1 = (user)session.getAttribute("user");
-        if(user1==null){
-            return CommonResult.failed("你还没登录！！！");
-        }
         user user = userService.UserById(user1.getUsername());
         CommonResult<user> result = new CommonResult<>(200, "查询成功", user);
         return result;

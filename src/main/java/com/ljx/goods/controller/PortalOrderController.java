@@ -66,9 +66,6 @@ public class PortalOrderController {
     @ResponseBody
     public CommonResult userIdOrder(HttpSession session){
         user user = (user)session.getAttribute("user");
-        if(user==null){
-            return CommonResult.failed("你还没登录！！！");
-        }
         Integer userId = user.getId();
         CommonResult myOrders = orderService.getMyOrders(userId);
         if(myOrders.getCode()==200){
