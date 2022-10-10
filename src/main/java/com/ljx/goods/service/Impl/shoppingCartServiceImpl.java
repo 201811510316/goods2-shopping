@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class shoppingCartServiceImpl extends ServiceImpl<shoppingCartMapper, shoppingCart> implements shoppingCartService {
+public class shoppingCartServiceImpl  implements shoppingCartService {
 
     @Autowired
     shoppingCartMapper shoppingCartMapper;
