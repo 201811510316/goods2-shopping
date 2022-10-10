@@ -8,15 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MybatisConfig {
-//    @Bean
-//    public ConfigurationCustomizer mybatisConfigurationCustomizer() {
-//        return new ConfigurationCustomizer() {
-//            @Override
-//            public void customize(MybatisConfiguration configuration) {
-//                configuration.setObjectWrapperFactory(new MybatisMapWrapperFactory());
-//            }
-//        };
-//    }
 
     //mybatis-plus的分页拦截器
     @Bean

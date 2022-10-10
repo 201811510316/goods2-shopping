@@ -1,24 +1,26 @@
 package com.ljx.goods.controller;
 
+import com.auth0.jwt.JWT;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ljx.goods.annatation.LoginToken;
+import com.ljx.goods.mapper.goodsMapper;
 import com.ljx.goods.pojo.goods;
 import com.ljx.goods.pojo.shoppingCart;
 import com.ljx.goods.pojo.user;
 import com.ljx.goods.service.shoppingCartService;
-import com.ljx.goods.util.useless.CommonResult;
+import com.ljx.goods.service.userService;
+import com.ljx.goods.util.token.cookieUtils;
+import com.ljx.goods.util.responstiy.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
  * 购物车管理
  */
-@Controller
+@RestController
 @RequestMapping("/cart")
 public class CartItemController {
     /**
@@ -30,15 +32,31 @@ public class CartItemController {
      */
 
     @Autowired
+    userService userService;
+
+    @Autowired
     shoppingCartService shoppingCartService;
 
+    @Autowired
+    goodsMapper goodsMapper;
+
+
     //添加商品到购物车
-    @RequestMapping("/addcart")
-    @ResponseBody
-    public CommonResult addByCart(@RequestBody goods goods, HttpSession session){
-        user user = (user)session.getAttribute("user");
-        shoppingCart shoppingCart = new shoppingCart();
+    @LoginToken
+    @PostMapping(value = "/addcart")
+    public CommonResult addByCart(@RequestParam("id")Integer id, @RequestHeader("token")String token,HttpServletRequest request){
+        //拿到当前用户信息
+//        String token = cookieUtils.getCookieValue(request, "token");
+        String username = JWT.decode(token).getAudience().get(0);
+        user user = userService.UserByUsername(username);
+
+        //拿到对应的商品信息
+        QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
+        goodsQueryWrapper.eq("goods_id",id);
+        goods goods = goodsMapper.selectOne(goodsQueryWrapper);
+
         //生成shoppingCart
+        shoppingCart shoppingCart = new shoppingCart();
         shoppingCart.setUserId(user.getId());
         shoppingCart.setGoodsId(goods.getGoodsId());
         shoppingCart.setCount(1);
@@ -54,26 +72,25 @@ public class CartItemController {
     }
 
     //获取当前购物车列表
-    @RequestMapping("/getcart")
-    @ResponseBody
-    public CommonResult getByCart(HttpSession session){
-        user user = (user)session.getAttribute("user");
+    @LoginToken
+    @GetMapping(value = "/getcart")
+    public CommonResult getByCart(@RequestHeader("token")String token,HttpServletRequest request){
+//        String token = cookieUtils.getCookieValue(request, "token");
+        String username = JWT.decode(token).getAudience().get(0);
+        user user = userService.UserByUsername(username);
+
         List<shoppingCart> shoppingCarts = shoppingCartService.selectUserCart(user.getId());
         if(!shoppingCarts.isEmpty()){
             return new CommonResult(200,"获取成功",shoppingCarts);
         }else{
             return new CommonResult(200,"当前购物车为空，快去购物吧！");
         }
-
     }
 
     //修改购物车中指定商品数量
-    @RequestMapping("/updatecount")
-    @ResponseBody
+    @LoginToken
+    @PutMapping(value = "/updatecount")
     public CommonResult updateByCount(@RequestBody shoppingCart shoppingCart){
-//        user user = (user)session.getAttribute("user");
-//        shoppingCart.setUserId(user.getId());
-
         CommonResult commonResult = shoppingCartService.updateCart(shoppingCart);
         if (commonResult.getCode()==200){
             return new CommonResult(200,"修改成功");
@@ -82,10 +99,9 @@ public class CartItemController {
     }
 
     //删除购物车中指定商品
-    @RequestMapping("/deletecart")
-    @ResponseBody
-    public CommonResult deleteByCart(@RequestBody shoppingCart shoppingCart){
-        Integer goodsId = shoppingCart.getGoodsId();
+    @LoginToken
+    @DeleteMapping(value = "/deletecart")
+    public CommonResult deleteByCart(@RequestParam("goodsId")Integer goodsId){
         CommonResult commonResult = shoppingCartService.deleteCart(goodsId);
         if (commonResult.getCode()==200){
             return new CommonResult(200,"删除成功");
@@ -94,27 +110,51 @@ public class CartItemController {
     }
 
 
-    //购物车点击去结算,生成订单
-    @RequestMapping("/cartorder")
-    @ResponseBody
-    public CommonResult cartByOrder(HttpSession session){
-        int priceTotal=0;
-        user user = (user)session.getAttribute("user");
-        List<shoppingCart> shoppingCarts = shoppingCartService.selectUserCart(user.getId());
-
-        if(CollectionUtils.isEmpty(shoppingCarts)){
-            return new CommonResult(404,"购物车为空，不能结账");
-        }else{
-            for(shoppingCart sc:shoppingCarts){
-                priceTotal+=sc.getCount()*sc.getGoodsPrice();
-            }
-            if(priceTotal<0){
-                return new CommonResult(404,"出错了！");
-            }
-        }
-        session.setAttribute("priceTotal",priceTotal);
-        return new CommonResult(200,"ok",shoppingCarts);
-    }
+//    //添加商品到购物车
+//    @RequestMapping(value = "/addcart",method = RequestMethod.POST)
+//    @ResponseBody
+//    public CommonResult addByCart(@RequestParam("id")Integer id, HttpSession session){
+//        //拿到当前用户信息
+//        user user = (user)session.getAttribute("user");
+//        if(user==null){
+//            return CommonResult.failed("你还没登录！！！");
+//        }
+//        //拿到对应的商品信息
+//        QueryWrapper<goods> goodsQueryWrapper = new QueryWrapper<>();
+//        goodsQueryWrapper.eq("goods_id",id);
+//        goods goods = goodsMapper.selectOne(goodsQueryWrapper);
+//
+//        //生成shoppingCart
+//        shoppingCart shoppingCart = new shoppingCart();
+//        shoppingCart.setUserId(user.getId());
+//        shoppingCart.setGoodsId(goods.getGoodsId());
+//        shoppingCart.setCount(1);
+//        shoppingCart.setGoodsName(goods.getGoodsName());
+//        shoppingCart.setTupian(goods.getTupian());
+//        shoppingCart.setGoodsPrice(goods.getGoodsPrice());
+//        //将shoppingCart保存
+//        CommonResult commonResult = shoppingCartService.goodsAddCart(shoppingCart);
+//        if(commonResult.getCode()==200){
+//            return new CommonResult(200,"添加成功");
+//        }
+//        return new CommonResult(404,"添加失败");
+//    }
+//
+//    //获取当前购物车列表
+//    @RequestMapping(value = "/getcart",method = RequestMethod.GET)
+//    @ResponseBody
+//    public CommonResult getByCart(HttpSession session)throws Exception{
+//        user user = (user)session.getAttribute("user");
+//        if(user==null){
+//            throw new Exception("你还没有登录");
+//        }
+//        List<shoppingCart> shoppingCarts = shoppingCartService.selectUserCart(user.getId());
+//        if(!shoppingCarts.isEmpty()){
+//            return new CommonResult(200,"获取成功",shoppingCarts);
+//        }else{
+//            return new CommonResult(200,"当前购物车为空，快去购物吧！");
+//        }
+//    }
 
 
 }

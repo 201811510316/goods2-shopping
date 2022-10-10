@@ -1,8 +1,7 @@
 package com.ljx.goods.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.ljx.goods.pojo.shoppingCart;
-import com.ljx.goods.util.useless.CommonResult;
+import com.ljx.goods.util.responstiy.CommonResult;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

@@ -2,13 +2,12 @@ package com.ljx.goods.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ljx.goods.mapper.goodsMapper;
 import com.ljx.goods.mapper.shoppingCartMapper;
 import com.ljx.goods.pojo.goods;
 import com.ljx.goods.pojo.shoppingCart;
 import com.ljx.goods.service.shoppingCartService;
-import com.ljx.goods.util.useless.CommonResult;
+import com.ljx.goods.util.responstiy.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

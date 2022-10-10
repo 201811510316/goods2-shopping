@@ -1,4 +1,4 @@
-package com.ljx.goods.util.useless;
+package com.ljx.goods.util.responstiy;
 
 public interface IErrorCode {
     /**

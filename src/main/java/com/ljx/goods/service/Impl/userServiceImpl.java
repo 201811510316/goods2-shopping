@@ -10,31 +10,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class userServiceImpl extends ServiceImpl<userMapper, user> implements userService {
+public class userServiceImpl implements userService {
     @Autowired
     userMapper userMapper;
 
     //用户注册
     @Override
     public Integer addByUser(String username,String password) {
-        QueryWrapper<user> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.eq("username",username);
-        if(userMapper.selectOne(userQueryWrapper) !=null){
-            return null;
+        if("".equals(username) && "".equals(password)){
+            return 0;
+        }else{
+            QueryWrapper<user> userQueryWrapper = new QueryWrapper<>();
+            userQueryWrapper.eq("username",username).or().eq("password",password);
+            if(!userMapper.selectList(userQueryWrapper).isEmpty()){
+                return 0;
+            }
+            user user = new user();
+            user.setUsername(username);
+            user.setPassword(password);
+            int insert = userMapper.insert(user);
+            return insert;
         }
-        user user = new user();
-        user.setUsername(username);
-        user.setPassword(password);
-        int insert = userMapper.insert(user);
-        return insert;
     }
 
     //用户查询
     @Override
-    public user UserById(String username) {
+    public user UserByUsername(String username) {
         QueryWrapper<user> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("username",username);
         return userMapper.selectOne(userQueryWrapper);
+    }
+
+    //根据用户id查询
+    @Override
+    public user UserById(Integer id) {
+        return userMapper.selectById(id);
     }
 
     //用户登录

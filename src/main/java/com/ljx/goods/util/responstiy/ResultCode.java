@@ -1,4 +1,4 @@
-package com.ljx.goods.util.useless;
+package com.ljx.goods.util.responstiy;
 
 /**
  * 常用api返回对象

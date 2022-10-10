@@ -6,13 +6,8 @@ import com.ljx.goods.service.goodsService;
 import com.ljx.goods.util.goodsByFenLeiResult;
 import com.ljx.goods.util.goodsContentResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +16,7 @@ import java.util.Map;
  * 首页内容
  */
 
-@Controller
+@RestController
 public class MallHomeController {
     /**
      *  首页内容信息展示
@@ -35,21 +30,20 @@ public class MallHomeController {
     @Autowired
     goodsClassificationService goodsClassificationService;
 
-    //首页内容信息展示
-    @RequestMapping(value = "/index",method = RequestMethod.GET)
-    public String  goodsAll(HttpServletRequest request){
-        goodsContentResult all = goodsService.findAll();
-        List<goodsAd> goodsAd = goodsService.getGoodsAd();
-        request.setAttribute("goods",all);
-        request.setAttribute("goodsAd",goodsAd);
-        return "index";
-    }
+//    //首页内容信息展示
+//    @RequestMapping(value = "/index",method = RequestMethod.GET)
+//    public String  goodsAll(HttpServletRequest request){
+//        goodsContentResult all = goodsService.findAll();
+//        List<goodsAd> goodsAd = goodsService.getGoodsAd();
+//        request.setAttribute("goods",all);
+//        request.setAttribute("goodsAd",goodsAd);
+//        return "index";
+//    }
 
     //展示首页横幅图片
-    @RequestMapping("/ad")
-    @ResponseBody
+    @GetMapping("/ad")
     public Object banner(){
-        Map resultObj = new HashMap();
+        Map<String,Object> resultObj = new HashMap<>();
         List<goodsAd> goodsAd = goodsService.getGoodsAd();
         if(goodsAd !=null){
             resultObj.put("code",200);
@@ -64,10 +58,9 @@ public class MallHomeController {
     }
 
     //首页内容信息展示
-    @RequestMapping(value = "/getall",method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping(value = "/getall")
     public Object goodsAll1(){
-        Map resultObj = new HashMap();
+        Map<String,Object> resultObj = new HashMap<>();
         goodsContentResult all = goodsService.findAll();
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
@@ -76,10 +69,9 @@ public class MallHomeController {
     }
 
     //根据分类获取专题(商品)
-    @RequestMapping(value = "/fenlei",method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping(value = "/fenlei")
     public Object goodsByFenLei(@RequestParam("id") Integer categoryId){
-        Map resultObj = new HashMap();
+        Map<String,Object> resultObj = new HashMap<>();
         goodsByFenLeiResult allByType = goodsService.findAllByType(categoryId);
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
@@ -88,10 +80,9 @@ public class MallHomeController {
     }
 
     //获取分类信息--分类名称
-    @RequestMapping(value = "/categoryName",method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping(value = "/categoryName")
     public Object goodsByCategoryName(){
-        Map resultObj = new HashMap();
+        Map<String,Object> resultObj = new HashMap<>();
         goodsByFenLeiResult categoryByAll = goodsClassificationService.categoryByAll();
         resultObj.put("code",200);
         resultObj.put("message","查询成功");
